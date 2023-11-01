@@ -77,10 +77,18 @@ valid_place(Position) :-
     board(Board),
     member(Element, Board), Element = node(Position, blank, 0,_,_,_,_,_).
 
+check_player_color(FromPosition) :-
+    board(Board),
+    current_player(Current),
+    member(Element, Board), Element = node(FromPosition, Color,_,_,_,_,_,_),
+    Color = Current
+    .
+
 
 %Predicate to check if a move is valid
 %For a move to be valid the stacks must have the same size, must be adjacent and the top color of the stack must be off a different color
 valid_move(FromPosition, ToPosition) :-
+    check_player_color(FromPosition),
     check_adjacency(FromPosition, ToPosition),
     check_stack(FromPosition, ToPosition)
     .
@@ -120,13 +128,12 @@ decrease_stack_size(Position) :-
     member(node(Position, Color, StackSize, _, _, _, _, _), Board),
     StackSize > 0,
     NewStackSize is StackSize - 1,
-    %current_player(Current),
     (Color = yellow -> NewColor = blue; NewColor = yellow),
-    (newStackSize = 0 -> Color = blank),
-    select(node(Position, _, StackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents), Board, node(Position, NewColor, NewStackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents), NewBoard),  % Select the node with the specified position and update its color
+    (NewStackSize = 0 -> FinalColor = blank; FinalColor = NewColor),
+    select(node(Position, _, StackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents), Board, node(Position, FinalColor, NewStackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents), NewBoard),  % Select the node with the specified position and update its color
     retract(board(_)),  % Remove the current board from the database
-    assertz(board(NewBoard)) % Assert the updated board back into the database
-    .
+    assertz(board(NewBoard)). % Assert the updated board back into the database
+
 
 % Utility predicate to increase stack by one
 increase_stack_size(Position) :-
