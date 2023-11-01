@@ -1,4 +1,18 @@
 :- dynamic node/6.
+:- dynamic state/1.
+
+%Possible states: main_menu, gamestate
+state(main_menu).
+
+
+switch_state(State) :- 
+                        state(Current),
+                        retract(state(Current)),
+                        assertz(state(State)).
+                        
+
+
+
 
 play :- 
         write(''), nl,
@@ -22,6 +36,7 @@ play :-
         draw_board,
         first_menu
         .
+
 
 
 first_menu :- 
@@ -80,7 +95,7 @@ draw_game_rules :-
                 .
 
 
-%play_person_vs_person :- .
+play_person_vs_person :- .
 %play_person_vs_computer :- .
 %play_computer_vs_computer :- .
 
@@ -110,85 +125,14 @@ draw_board :-
             .
 
 
-%Nodes are used to represent the places to place pieces
-%node(Position, Color, Visited, IsLeft, IsRight, IsBottom).
-node(1, blank, 0, 1, 1, 0).
-node(2, blank, 0, 1, 0, 0).
-node(3, blank, 0, 0, 1, 0).
-node(4, blank, 0, 1, 0, 0).
-node(5, blank, 0, 0, 0, 0).
-node(6, blank, 0, 0, 1, 0).
-node(7, blank, 0, 1, 0, 0).
-node(8, blank, 0, 0, 0, 0).
-node(9, blank, 0, 0, 0, 0).
-node(10, blank, 0, 0, 1, 0).
-node(11, blank, 0, 1, 0, 0).
-node(12, blank, 0, 0, 0, 0).
-node(13, blank, 0, 0, 0, 0).
-node(14, blank, 0, 0, 0, 0).
-node(15, blank, 0, 0, 1, 0).
-node(16, blank, 0, 1, 0, 0).
-node(17, blank, 0, 0, 0, 0).
-node(18, blank, 0, 0, 0, 0).
-node(19, blank, 0, 0, 0, 0).
-node(20, blank, 0, 0, 0, 0).
-node(21, blank, 0, 0, 1, 0).
-node(22, blank, 0, 1, 0, 0).
-node(23, blank, 0, 0, 0, 0).
-node(24, blank, 0, 0, 0, 0).
-node(25, blank, 0, 0, 0, 0).
-node(26, blank, 0, 0, 0, 0).
-node(27, blank, 0, 0, 0, 0).
-node(28, blank, 0, 0, 1, 0).
-node(29, blank, 0, 1, 0, 1).
-node(30, blank, 0, 0, 0, 1).
-node(31, blank, 0, 0, 0, 1).
-node(32, blank, 0, 0, 0, 1).
-node(33, blank, 0, 0, 0, 1).
-node(34, blank, 0, 0, 0, 1).
-node(35, blank, 0, 0, 0, 1).
-node(36, blank, 0, 0, 1, 1).
 
 
-%edge(Source, Dest).
-edge(1, [2,3]).
-edge(2, [1,3,4,5]).
-edge(3, [1,2,5,6]).
-edge(5, [1,3,4,5]).
-edge(6, [1,3,4,5]).
-edge(7, [1,3,4,5]).
-edge(8, [1,3,4,5]).
-edge(9, [1,3,4,5]).
-edge(10, [1,3,4,5]).
-edge(11, [1,3,4,5]).
-edge(12, [1,3,4,5]).
-edge(13, [1,3,4,5]).
-edge(14, [1,3,4,5]).
-edge(15, [1,3,4,5]).
-edge(16, [1,3,4,5]).
-edge(17, [1,3,4,5]).
-edge(18, [1,3,4,5]).
-edge(19, [1,3,4,5]).
-edge(20, [1,3,4,5]).
-edge(21, [1,3,4,5]).
-edge(22, [1,3,4,5]).
-edge(23, [1,3,4,5]).
-edge(24, [1,3,4,5]).
-edge(25, [1,3,4,5]).
-edge(26, [1,3,4,5]).
-edge(27, [1,3,4,5]).
-edge(28, [1,3,4,5]).
-edge(29, [1,3,4,5]).
-edge(30, [1,3,4,5]).
-edge(31, [1,3,4,5]).
-edge(32, [1,3,4,5]).
-edge(34, [1,3,4,5]).
-edge(35, [1,3,4,5]).
-edge(36, [1,3,4,5]).
 
-
-dfs(Source) :- 
-                edge(Source, Adjacent),
-                
-
+place(Position) :- 
+                    (
+                    %if position is empty
+                    node(Position, blank, _, _, _, _, _) -> write("Piece can be placed!")
+                    ; %else
+                    write("Piece can't be placed!")
+                    ).
 
