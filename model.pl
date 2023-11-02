@@ -1,6 +1,7 @@
 :- dynamic board/1.
 :- dynamic current_player/1.
 :- dynamic node/8.
+:- use_module(library(lists)).
 
 %Data structure used:
 %node(Position, Color, StackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents).
@@ -8,6 +9,7 @@
 %Initialize the game state
 initialize_game :-
     retractall(board(_)),
+    retractall(current_player(_)),
     assertz(board([
                 node(1, blank, 0, 0, 1, 1, 0, [2, 3]),
                 node(2, blank, 0, 0, 1, 0, 0, [1, 3, 4, 5]),
@@ -118,6 +120,25 @@ place_piece(Position) :-
 
 
 % Utility predicate to the color
+%modify_node_color(Position, NewColor) :-
+%    board(Board),
+%    member(node(Position, _, StackSize, _, _, _, _, _), Board),
+%    NewStackSize is StackSize + 1,
+%    findall(
+%            Position,
+%            (
+%                \+ member(node(Position, _, _, _, _, _, _,_),Board),
+%            ),
+%            UpdatedNodes
+%        ),
+%    NewBoard = UpdatedNodes.
+%    retract(board(_)),  % Remove the current board from the database
+%    assertz(board(NewBoard)) % Assert the updated board back into the database
+%    .
+
+
+
+
 modify_node_color(Position, NewColor) :-
     board(Board),
     member(node(Position, _, StackSize, _, _, _, _, _), Board),
@@ -126,6 +147,7 @@ modify_node_color(Position, NewColor) :-
     retract(board(_)),  % Remove the current board from the database
     assertz(board(NewBoard)) % Assert the updated board back into the database
     .
+
 
 % Utility predicate to decrease stack by one
 decrease_stack_size(Position) :-

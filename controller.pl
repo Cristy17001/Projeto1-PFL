@@ -36,18 +36,30 @@ read_player_input(Type, FromPosition, ToPosition) :-
 
 
 
+dfs(Start) :-
+    dfs([Start],[],_,_,_).
 
-%dfs(Current, VisitedList, IsRight, IsLeft, IsBottom) :-
-%    board(Board).
-    % Add the current to the visited list(RESULT LIST)
+%% dfs(ToVisit, Visited)
+%% Done, all visited
+dfs([],_,_,_,_).
 
-    % Get all the Current adjacents of the same color
-    %get_adjacents_same_color(Current, Adjacents),
+%% Skip elements that are already visited
+dfs([H|T], Visited, Right, Left, Bottom) :-
+    member(H,Visited),
+    dfs(T, Visited, Right, Left, Bottom).
 
-    %(Right = true -> IsRight = true ; true),
-    %(Bottom = true -> IsBottom = true ; true),
-    %(Left = true -> IsLeft = true ; true)
-    
+%% Add all neigbors of the head to the toVisit
+dfs([H|T], Visited, Right, Left, Bottom) :-
+    % Verify not visited
+    not(member(H, Visited)),
+    board(Board),
+    member(node(H, _, _, _, IsLeft, IsRight, IsBottom, _), Board),
+    (IsRight = true -> Right = true ; true),
+    (IsBottom = true -> Bottom = true ; true),
+    (IsLeft = true -> Left = true ; true),
+    get_adjacents_same_color(H, AdjacentsSameColor),
+    append(AdjacentsSameColor, T, ToVisit),
+    dfs(ToVisit,[H|Visited], Right, Left, Bottom).
 
 get_adjacents_same_color(Position, AdjacentsSameColor) :-
     board(Board),
@@ -72,9 +84,3 @@ get_adjacents_same_color_helper(Adjacents, WantedColor,AdjacentsSameColor):-
         AdjacentsSameColor
         ).
 
-% Example usage:
-% dfs(1, [], ResultList).
-
-
-%announce_winner(Player) :-
-%    format('Player ~w wins!', [Player]).
