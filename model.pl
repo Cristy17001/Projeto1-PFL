@@ -95,9 +95,11 @@ valid_move(FromPosition, ToPosition) :-
 
 % Predicate to make a move
 move_piece(FromPosition, ToPosition) :-
-    (valid_move(FromPosition, ToPosition),
-     decrease_stack_size(FromPosition),
-     increase_stack_size(ToPosition)
+    (
+        valid_move(FromPosition, ToPosition),
+        decrease_stack_size(FromPosition),
+        increase_stack_size(ToPosition),
+        !
     );
     write("Invalid piece movement/capture! Stacks must be adjacent, have different colors and same size!"), nl, fail
     .
@@ -105,10 +107,13 @@ move_piece(FromPosition, ToPosition) :-
 
 % Predicate to make a placement of a piece in a blankspace
 place_piece(Position) :-
-    (valid_place(Position),
-    current_player(Player),
-    modify_node_color(Position, Player));
-    write("Invalid piece placement! To place a piece the space must be empty!"), nl, fail
+    (
+        valid_place(Position),
+        current_player(Player),
+        modify_node_color(Position, Player),
+    !
+    );
+    write("Invalid piece placement! To place a piece the space must be empty!"), nl
     .
 
 
