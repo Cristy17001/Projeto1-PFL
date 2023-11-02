@@ -95,14 +95,14 @@ draw_game_rules :-
                 .
 
 
-play_person_vs_person :- .
+%play_person_vs_person :- .
 %play_person_vs_computer :- .
 %play_computer_vs_computer :- .
 
 
 
 
-draw_board :-
+draw_board_positions :-
     write(''), nl,
     write('                 +----+                  '), nl,
     write('                 | 01 |                  '), nl,
