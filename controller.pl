@@ -27,12 +27,24 @@ read_player_input(Type, FromPosition, ToPosition) :-
         write('Invalid type of movement!'), nl
     ).
 
-%check_winner :-
-    %current_player(Player),
-    %board(Board).
-    % Iterate over each piece of the current player, that has either IsLeft, IsRight, IsBottom true
-    % Execute a dfs that return true if all of those flags were found
-    % Reset the loop by reseting the isVisited
+% Iterate over each piece of the current player, that has either IsLeft, IsRight, IsBottom true
+% Execute a dfs that return true if all of those flags were found
+check_winning(Won) :-
+    current_player(Player),
+    get_pieces_same_color_on_sides(Player, SameColorList),
+    % For each piece that has not been visited and is from one of the sides
+    foreach(
+        member(Piece, SameColorList),
+        (
+            Won = 1 -> !, % No need to iterate more
+            (member(Piece, FinalVisited) -> !; true), % Check to see if not visited yet
+            dfs(Piece, IsRight, IsLeft, IsBottom, FinalVisited), % Execute the dfs and get the IsRight, IsLeft, IsBottom and Visited
+            (IsRight = 1, IsLeft = 1, IsBottom = 1 -> Won = 1; Won = 0)
+        )
+    ).
+
+    
+
 
 
 
@@ -83,5 +95,20 @@ get_adjacents_same_color_helper(Adjacents, WantedColor,AdjacentsSameColor):-
 
         ),
         AdjacentsSameColor
-        ).
+    ).
 
+get_pieces_same_color_on_sides(WantedColor, SameColorList) :-
+    board(Board),
+    findall(
+        Position,
+        (
+            (
+                (member(node(Position, Color, _, _, _, _, 1, _), Board));
+                (member(node(Position, Color, _, _, _, 1, _, _), Board));
+                (member(node(Position, Color, _, _, 1, _, _, _), Board))
+            ),
+            Color = WantedColor
+        ),
+        Auxiliary
+    ),
+    list_to_set(Auxiliary, SameColorList).
