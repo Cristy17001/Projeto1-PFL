@@ -1,5 +1,6 @@
 :- consult('model.pl').
 :- consult('view.pl').
+:- use_module(library(lists)).
 
 % Controller - game logic and user interaction
 play :-
@@ -44,9 +45,6 @@ check_winning(Won) :-
     ).
 
     
-
-
-
 
 dfs(Start, IsRight, IsLeft, IsBottom, FinalVisited) :-
     dfs([Start], [], IsRight, IsLeft, IsBottom, FinalVisited).
