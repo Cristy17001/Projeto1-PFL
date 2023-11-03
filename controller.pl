@@ -30,24 +30,27 @@ read_player_input(Type, FromPosition, ToPosition) :-
 
 % Iterate over each piece of the current player, that has either IsLeft, IsRight, IsBottom true
 % Execute a dfs that return true if all of those flags were found
-check_winning(Won) :-
+check_winning :-
     current_player(Player),
     get_pieces_same_color_on_sides(Player, SameColorList),
     % For each piece that has not been visited and is from one of the sides
+    (SameColorList = [] -> false; true),
     foreach(
         member(Piece, SameColorList),
         (
-            Won = 1 -> !, % No need to iterate more
-            (member(Piece, FinalVisited) -> !; true), % Check to see if not visited yet
-            dfs(Piece, IsRight, IsLeft, IsBottom, FinalVisited), % Execute the dfs and get the IsRight, IsLeft, IsBottom and Visited
-            (IsRight = 1, IsLeft = 1, IsBottom = 1 -> Won = 1; Won = 0)
+            (check_winning_helper(Piece) -> !)
         )
     ).
 
+check_winning_helper(Piece) :- 
+    dfs_start(Piece, Right, Left, Bottom, FinalVisited), !,
+    Right = 1, !,
+    Left = 1, !,
+    Bottom = 1, !.
     
 
-dfs(Start, IsRight, IsLeft, IsBottom, FinalVisited) :-
-    dfs([Start], [], IsRight, IsLeft, IsBottom, FinalVisited).
+dfs_start(Start, Right, Left, Bottom, FinalVisited) :-
+    dfs([Start], [], Right, Left, Bottom, FinalVisited).
 
 %% dfs(ToVisit, Visited)
 %% Done, all visited
@@ -68,9 +71,10 @@ dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
     append(AdjacentsSameColor, T, ToVisit),
     dfs(ToVisit,[H|Visited], Right, Left, Bottom, FinalVisited),
     (append([H], Visited, FinalVisited); true),
-    (IsRight = 1 -> Right = 1 ; true),
-    (IsBottom = 1 -> Bottom = 1 ; true),
-    (IsLeft = 1 -> Left = 1 ; true).
+    (IsRight = 1 -> Right = 1 ; Right = 0; true),
+    (IsBottom = 1 -> Bottom = 1 ; Bottom = 0; true),
+    (IsLeft = 1 -> Left = 1 ; Left = 0; true).
+
 
 get_adjacents_same_color(Position, AdjacentsSameColor) :-
     board(Board),
