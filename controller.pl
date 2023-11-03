@@ -36,27 +36,28 @@ read_player_input(Type, FromPosition, ToPosition) :-
 
 
 
-dfs(Start, IsRight, IsLeft, IsBottom) :-
-    dfs([Start], [], IsRight, IsLeft, IsBottom).
+dfs(Start, IsRight, IsLeft, IsBottom, FinalVisited) :-
+    dfs([Start], [], IsRight, IsLeft, IsBottom, FinalVisited).
 
 %% dfs(ToVisit, Visited)
 %% Done, all visited
-dfs([],_,_,_,_).
+dfs([],_,_,_,_,_).
 
 %% Skip elements that are already visited
-dfs([H|T], Visited, Right, Left, Bottom) :-
+dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
     member(H,Visited),
-    dfs(T, Visited, Right, Left, Bottom).
+    dfs(T, Visited, Right, Left, Bottom, FinalVisited).
 
 %% Add all neigbors of the head to the toVisit
-dfs([H|T], Visited, Right, Left, Bottom) :-
+dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
     % Verify not visited
     not(member(H, Visited)),
     board(Board),
     member(node(H, _, _, _, IsLeft, IsRight, IsBottom, _), Board),
     get_adjacents_same_color(H, AdjacentsSameColor),
     append(AdjacentsSameColor, T, ToVisit),
-    dfs(ToVisit,[H|Visited], Right, Left, Bottom),
+    dfs(ToVisit,[H|Visited], Right, Left, Bottom, FinalVisited),
+    (append([H], Visited, FinalVisited); true),
     (IsRight = 1 -> Right = 1 ; true),
     (IsBottom = 1 -> Bottom = 1 ; true),
     (IsLeft = 1 -> Left = 1 ; true).
