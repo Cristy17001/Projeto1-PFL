@@ -36,8 +36,8 @@ read_player_input(Type, FromPosition, ToPosition) :-
 
 
 
-dfs(Start) :-
-    dfs([Start],[],_,_,_).
+dfs(Start, IsRight, IsLeft, IsBottom) :-
+    dfs([Start], [], IsRight, IsLeft, IsBottom).
 
 %% dfs(ToVisit, Visited)
 %% Done, all visited
@@ -54,12 +54,12 @@ dfs([H|T], Visited, Right, Left, Bottom) :-
     not(member(H, Visited)),
     board(Board),
     member(node(H, _, _, _, IsLeft, IsRight, IsBottom, _), Board),
-    (IsRight = true -> Right = true ; true),
-    (IsBottom = true -> Bottom = true ; true),
-    (IsLeft = true -> Left = true ; true),
     get_adjacents_same_color(H, AdjacentsSameColor),
     append(AdjacentsSameColor, T, ToVisit),
-    dfs(ToVisit,[H|Visited], Right, Left, Bottom).
+    dfs(ToVisit,[H|Visited], Right, Left, Bottom),
+    (IsRight = 1 -> Right = 1 ; true),
+    (IsBottom = 1 -> Bottom = 1 ; true),
+    (IsLeft = 1 -> Left = 1 ; true).
 
 get_adjacents_same_color(Position, AdjacentsSameColor) :-
     board(Board),
