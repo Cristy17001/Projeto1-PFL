@@ -1,26 +1,119 @@
 :- consult('model.pl').
 :- consult('view.pl').
 :- use_module(library(lists)).
+:- use_module(library(aggregate)).
+:- use_module(library(random)).
 :- dynamic won/1.
+:- dynamic game_state/1.
+
 
 % Controller - game logic and user interaction
 play :-
     initialize_game,
+    place_piece(1), place_piece(3), place_piece(6), place_piece(10), place_piece(15), place_piece(21), place_piece(28),
     game_loop.
 
 game_loop :-
     repeat,
-        display_board,
+        game_state(State),
+        process_game_state(State), fail.
+
+% Process when the game is at the Menu State
+process_game_state(menu) :-
+    draw_menu, 
+    read(Input),
+    (
+        (Input == 1 -> change_game_state(pVp));
+        (Input == 2 -> change_game_state(pVc));
+        (Input == 3 -> change_game_state(cVc));
+        (Input == 4 -> change_game_state(rules));
+        write('INVALID CHOICE!'), nl
+    ).
+
+% Possible Game States are menu, rules, pVp, pVc, cVc
+
+% Process when the game is at the rules State
+process_game_state(rules) :-
+    draw_game_rules,
+    change_game_state(menu)
+    .
+
+% Process when the game is at the Player vs Player State
+process_game_state(pVp) :-
+    writeln('++++++++++++++++++++++++'),
+    writeln('  _____   _____ '),
+    writeln(' | _ \\ \\ / / _ \\'),
+    writeln(' |  _/\\ V /|  _/'),
+    writeln(' |_|   \\_/ |_|  '),
+    writeln('++++++++++++++++++++++++'),
+
+    repeat,
+        (check_winning -> 
+            current_player(Player),
+            format('~w Player Won this math.', [Player]),
+            initialize_game, !, fail
+        ; 
+            true
+        ),
         read_player_input(Type, FromPosition, ToPosition),
         (
             (Type = move -> move_piece(FromPosition, ToPosition), switch_player, fail);
-            (Type = place -> place_piece(ToPosition), switch_player, fail);
-            (Type = stop -> !)
-        ),  
-        write('Invalid movement or placement!'), nl, fail.
+            (Type = place -> place_piece(ToPosition), switch_player, fail)
+        ).
+
+
+% Process when the game is at the Player vs Computer State
+process_game_state(pVc) :-
+    writeln('  _____   _____ '),
+    writeln(' | _ \\ \\ / / __|'),
+    writeln(' |  _/\\ V / (__ '),
+    writeln(' |_|   \\_/ \\___|')
+    .
+
+
+
+
+
+% Process when the game is at the Computer vs Computer State
+process_game_state(cVc) :-
+    writeln('  _____   _____ '),
+    writeln(' / __\\ \\ / / __|'),
+    writeln('| (__ \\ V / (__ '),
+    writeln(' \\___| \\_/ \\___|'),
+    
+    repeat,
+        (check_winning -> 
+            current_player(Player),
+            format('~w Player Won this math.', [Player]),
+            initialize_game, !, fail
+        ; 
+            true
+        ),
+        computer_play, 
+        switch_player,
+        fail
+    .
+
+
+
+change_game_state(State) :-
+    retractall(game_state(_)),
+    assertz(game_state(State))
+    .
+
+
+computer_play :-
+    current_player(Player),
+    format('It is ~w\'s turn.', [Player]), nl,
+    get_maneuver(_, _),
+    display_board,
+    write('Waiting for any key to continue: '),
+    read(Key).
+
 
 read_player_input(Type, FromPosition, ToPosition) :-
     current_player(Player),
+    display_board,
     format('It is ~w\'s turn. Enter move or place (e.g. move. OR place.): ', [Player]),
     read(Type),
     (
@@ -30,7 +123,6 @@ read_player_input(Type, FromPosition, ToPosition) :-
     ).
 
 
-won(blank).
 % Iterate over each piece of the current player, that has either IsLeft, IsRight, IsBottom true
 % Execute a dfs that return true if all of those flags were found
 check_winning :-
@@ -128,3 +220,10 @@ get_pieces_same_color_on_sides(WantedColor, SameColorList) :-
         ),
         SameColorList
     ).
+
+writeln(Content) :-
+    write(Content),
+    nl.
+
+not(Content) :-
+    \+Content.

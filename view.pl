@@ -94,3 +94,70 @@ get_node(Position, ShortColor, StackSize) :-
     (Color = blank -> ShortColor = ' ', StackSize = ' ')
     )
     .
+
+draw_game_name :-
+    write(''), nl,
+    write('               OOO                  OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO   OOOOOOOOOOOOOOOOOOOOOO'), nl,
+    write('              O:::O              OOO::::::::::::OO::::::::::::::::::::OO::::::::::::::::O  O::::::::::::::::::::O'), nl,
+    write('             O:::::O           OO:::::::::::::::OO::::::::::::::::::::OO::::::OOOOOO:::::O O::::::::::::::::::::O'), nl,
+    write('            O:::::::O         O:::::OOOOOOOO::::OOO::::::OOOOOOOOO::::OOO:::::O     O:::::OOO::::::OOOOOOOOO::::O'), nl,
+    write('           O:::::::::O       O:::::O       OOOOOO  O:::::O       OOOOOO  O::::O     O:::::O  O:::::O       OOOOOO'), nl,
+    write('          O:::::O:::::O     O:::::O                O:::::O               O::::O     O:::::O  O:::::O             '), nl,
+    write('         O:::::O O:::::O    O:::::O                O::::::OOOOOOOOOO     O::::OOOOOO:::::O   O::::::OOOOOOOOOO   '), nl,
+    write('        O:::::O   O:::::O   O:::::O    OOOOOOOOOO  O:::::::::::::::O     O:::::::::::::OO    O:::::::::::::::O   '), nl,
+    write('       O:::::O     O:::::O  O:::::O    O::::::::O  O:::::::::::::::O     O::::OOOOOO:::::O   O:::::::::::::::O   '), nl,
+    write('      O:::::OOOOOOOOO:::::O O:::::O    OOOOO::::O  O::::::OOOOOOOOOO     O::::O     O:::::O  O::::::OOOOOOOOOO   '), nl,
+    write('     O:::::::::::::::::::::OO:::::O        O::::O  O:::::O               O::::O     O:::::O  O:::::O             '), nl,
+    write('    O:::::OOOOOOOOOOOOO:::::OO:::::O       O::::O  O:::::O       OOOOOO  O::::O     O:::::O  O:::::O       OOOOOO'), nl,
+    write('   O:::::O             O:::::OO:::::OOOOOOOO::::OOO::::::OOOOOOOO:::::OOO:::::O     O:::::OOO::::::OOOOOOOO:::::O'), nl,
+    write('  O:::::O               O:::::OOO:::::::::::::::OO::::::::::::::::::::OO::::::O     O:::::OO::::::::::::::::::::O'), nl,
+    write(' O:::::O                 O:::::O OOO::::::OOO:::OO::::::::::::::::::::OO::::::O     O:::::OO::::::::::::::::::::O'), nl,
+    write('OOOOOOO                   OOOOOOO   OOOOOO   OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO     OOOOOOOOOOOOOOOOOOOOOOOOOOOOO'), nl,
+    write(''), nl
+    .
+
+draw_menu :-
+    write(''), nl,
+    write('++++++++++++++++++++++++'), nl,
+    write('  __  __ ___ _  _ _   _ '), nl,
+    write(' |  \\/  | __| \\| | | | |'), nl,
+    write(' | |\\/| | _|| .` | |_| |'), nl,
+    write(' |_|  |_|___|_|\\-|\\___/ '), nl,
+    write('++++++++++++++++++++++++'), nl,
+    write(''), nl,
+    write('1. Play PERSON VS PERSON'), nl,
+    write('2. Play PERSON VS COMPUTER'), nl,
+    write('3. COMPUTER VS COMPUTER'), nl,
+    write('4. SHOW GAME RULES'), nl, nl,
+    write('Select one option: ')
+    .
+
+draw_game_rules :-
+    write(''), nl,
+    write('++++++++++++++++++++++++'), nl,
+    write('  ___ _   _ _    ___ ___ '), nl,
+    write(' | _ \\ | | | |  | __/ __|'), nl,
+    write(' |   / |_| | |__| _|\\__ \\'), nl,
+    write(' |_|_\\___/|____|___|___/'), nl, nl,
+    write('++++++++++++++++++++++++'), nl, nl,
+    write(''), nl,
+    write('Materials:'), nl,
+    write('- 70 discs in 2 colors;'), nl,
+    write('- Triangular game board.'), nl,
+    write(''), nl,
+    write('Setup:'), nl,
+    write('- One player places a Yellow disc on any space. (In this case letter Y)'), nl,
+    write('- Blue (In this case letter B) goes first.'), nl,
+    write(''), nl,
+    write('Goal:'), nl,
+    write('- You win if, at the start of your turn, a single group of your stacks connects the 3 sides of the board.'), nl,
+    write('- Corner spaces connect to both adjacent sides.'), nl,
+    write('- A stack is yours if your disc is on top. A single disc is a stack.'), nl,
+    write(''), nl,
+    write('Playing the Game:'), nl,
+    write('On your turn, you may choose one of the following actions:'), nl,
+    write('1. Place a Disc:'), nl,
+    write('   - Put a disc of your color on an empty space.'), nl,
+    write('2. Move a Disc:'), nl,
+    write('   - Move a disc of your color from the top of a stack onto a neighboring opponent\'s stack of exactly the same height.'), nl
+    .

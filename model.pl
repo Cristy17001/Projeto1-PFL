@@ -10,6 +10,8 @@
 initialize_game :-
     retractall(board(_)),
     retractall(current_player(_)),
+    retractall(won(_)),
+    retractall(game_state(_)),
     assertz(board([
                 node(1, blank, 0, 0, 1, 1, 0, [2, 3]),
                 node(2, blank, 0, 0, 1, 0, 0, [1, 3, 4, 5]),
@@ -48,9 +50,10 @@ initialize_game :-
                 node(35, blank, 0, 0, 0, 0, 1, [27, 28, 34, 36]),
                 node(36, blank, 0, 0, 0, 1, 1, [28, 35])
             ])),
-                                
-    
-    %Current player can be yellow(Y) or blue(B) or blank when empty
+
+    assertz(game_state(menu)),                
+    assertz(won(blank)),
+    % Current player can be yellow(Y) or blue(B) or blank when empty
     assertz(current_player(yellow)).
 
 
@@ -85,9 +88,6 @@ check_player_color(FromPosition) :-
     member(Element, Board), Element = node(FromPosition, Color,_,_,_,_,_,_),
     Color = Current
     .
-
-
-
 
 %Predicate to check if a move is valid
 %For a move to be valid the stacks must have the same size, must be adjacent and the top color of the stack must be off a different color
@@ -156,9 +156,8 @@ increase_stack_size(Position) :-
     assertz(board(NewBoard)) % Assert the updated board back into the database
     .
 
-get_maneuver(ListOfMoves, ListOfPlaces, RandomMove) :-
+get_maneuver(ListOfMoves, ListOfPlaces) :-
     % Get values needed
-    board(Board),
     current_player(Current),
     get_valid_places(ListOfPlaces),
     get_valid_moves(ListOfMoves, Current),
@@ -166,18 +165,21 @@ get_maneuver(ListOfMoves, ListOfPlaces, RandomMove) :-
     % Calculate total length
     length(ListOfPlaces, LengthPlaces),
     length(ListOfMoves, LengthMoves),
-    LengthMoves > 0,
-    LengthPlaces > 0,
-    Length is LengthMoves + LengthPlaces,
+    Length is integer((LengthMoves + LengthPlaces)),
 
 
     random(0, Length, RandomIndex),
     (RandomIndex >= LengthPlaces ->
-        nth0(RandomIndex - LengthPlaces, ListOfMoves, [FirstElement, SecondElemen]),
-        move_piece(FirstElement, SecondElement)
+        Index is RandomIndex-LengthPlaces,
+        nth0(Index, ListOfMoves, Element),
+        nth0(0, Element, P1),
+        nth0(1, Element, P2),
+        move_piece(P1, P2),
+        write('Moved piece from '), write(P1), write(' To '), write(P2), nl
         ;
         nth0(RandomIndex, ListOfPlaces, Element),
-        place_piece(Element)
+        place_piece(Element),
+        write('Placed piece at '), write(Element), nl
     ).
 
 
@@ -198,7 +200,6 @@ get_valid_moves(ReturnList, Player) :-
         (member(Element, Board), Element = node(Position, Player, _,_,_,_,_,_)),
         PiecesOfPlayer
     ),
-    Auxiliary_List = [],
     % Initialize ReturnList as an empty list
     get_valid_moves_recursive(PiecesOfPlayer, OtherColor, [], ReturnList).
 
@@ -217,10 +218,8 @@ get_valid_moves_recursive([P1|Rest], OtherColor, ReturnList, UpdatedReturnList) 
 % Process the adjacents
 process_adjacents(_, [], ReturnList, ReturnList).
 process_adjacents(P1, [P2|Rest], ReturnList, UpdatedReturnList) :-
-    (valid_move(P1, P2) -> 
+    (check_stack(P1, P2) -> 
         append(ReturnList, [[P1, P2]], NewReturnList)
-    ; true % If not a valid move, continue
+    ; NewReturnList = ReturnList % If not a valid move, continue
     ),
-    process_adjacents(P1, Rest, NewReturnList, UpdatedReturnList).
-
-
+    process_adjacents(P1, Rest, NewReturnList, UpdatedReturnList); true.

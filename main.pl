@@ -15,24 +15,6 @@ switch_state(State) :-
 
 
 play :- 
-    write(''), nl,
-    write('               OOO                  OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO   OOOOOOOOOOOOOOOOOOOOOO'), nl,
-    write('              O:::O              OOO::::::::::::OO::::::::::::::::::::OO::::::::::::::::O  O::::::::::::::::::::O'), nl,
-    write('             O:::::O           OO:::::::::::::::OO::::::::::::::::::::OO::::::OOOOOO:::::O O::::::::::::::::::::O'), nl,
-    write('            O:::::::O         O:::::OOOOOOOO::::OOO::::::OOOOOOOOO::::OOO:::::O     O:::::OOO::::::OOOOOOOOO::::O'), nl,
-    write('           O:::::::::O       O:::::O       OOOOOO  O:::::O       OOOOOO  O::::O     O:::::O  O:::::O       OOOOOO'), nl,
-    write('          O:::::O:::::O     O:::::O                O:::::O               O::::O     O:::::O  O:::::O             '), nl,
-    write('         O:::::O O:::::O    O:::::O                O::::::OOOOOOOOOO     O::::OOOOOO:::::O   O::::::OOOOOOOOOO   '), nl,
-    write('        O:::::O   O:::::O   O:::::O    OOOOOOOOOO  O:::::::::::::::O     O:::::::::::::OO    O:::::::::::::::O   '), nl,
-    write('       O:::::O     O:::::O  O:::::O    O::::::::O  O:::::::::::::::O     O::::OOOOOO:::::O   O:::::::::::::::O   '), nl,
-    write('      O:::::OOOOOOOOO:::::O O:::::O    OOOOO::::O  O::::::OOOOOOOOOO     O::::O     O:::::O  O::::::OOOOOOOOOO   '), nl,
-    write('     O:::::::::::::::::::::OO:::::O        O::::O  O:::::O               O::::O     O:::::O  O:::::O             '), nl,
-    write('    O:::::OOOOOOOOOOOOO:::::OO:::::O       O::::O  O:::::O       OOOOOO  O::::O     O:::::O  O:::::O       OOOOOO'), nl,
-    write('   O:::::O             O:::::OO:::::OOOOOOOO::::OOO::::::OOOOOOOO:::::OOO:::::O     O:::::OOO::::::OOOOOOOO:::::O'), nl,
-    write('  O:::::O               O:::::OOO:::::::::::::::OO::::::::::::::::::::OO::::::O     O:::::OO::::::::::::::::::::O'), nl,
-    write(' O:::::O                 O:::::O OOO::::::OOO:::OO::::::::::::::::::::OO::::::O     O:::::OO::::::::::::::::::::O'), nl,
-    write('OOOOOOO                   OOOOOOO   OOOOOO   OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO     OOOOOOOOOOOOOOOOOOOOOOOOOOOOO'), nl,
-    write(''), nl,
     draw_board,
     first_menu
     .
@@ -92,7 +74,7 @@ draw_game_rules :-
     write('   - Put a disc of your color on an empty space.'), nl,
     write('2. Move a Disc:'), nl,
     write('   - Move a disc of your color from the top of a stack onto a neighboring opponent\'s stack of exactly the same height.'), nl
-                .
+    .
 
 
 %play_person_vs_person :- .
