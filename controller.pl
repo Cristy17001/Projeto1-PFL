@@ -1,6 +1,7 @@
 :- consult('model.pl').
 :- consult('view.pl').
 :- use_module(library(lists)).
+:- dynamic won/1.
 
 % Controller - game logic and user interaction
 play :-
@@ -28,6 +29,8 @@ read_player_input(Type, FromPosition, ToPosition) :-
         write('Invalid type of movement!'), nl
     ).
 
+
+won(blank).
 % Iterate over each piece of the current player, that has either IsLeft, IsRight, IsBottom true
 % Execute a dfs that return true if all of those flags were found
 check_winning :-
@@ -38,10 +41,15 @@ check_winning :-
     foreach(
         member(Piece, SameColorList),
         (
-            (check_winning_helper(Piece) -> !)
+            (check_winning_helper(Piece) -> retractall(won(_)), assertz(won(Player)); true)
         )
-    ).
+    ),
+    won(Player_that_won),
+    Player_that_won = Player,
+    retractall(won(_)), assertz(won(blank))
+    .
 
+% If one of the conditions fail then its false
 check_winning_helper(Piece) :- 
     dfs_start(Piece, Right, Left, Bottom, FinalVisited), !,
     Right = 1, !,
@@ -54,7 +62,7 @@ dfs_start(Start, Right, Left, Bottom, FinalVisited) :-
 
 %% dfs(ToVisit, Visited)
 %% Done, all visited
-dfs([],_,_,_,_,_).
+dfs([],_,0,0,0,_).
 
 %% Skip elements that are already visited
 dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
@@ -62,18 +70,28 @@ dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
     dfs(T, Visited, Right, Left, Bottom, FinalVisited).
 
 %% Add all neigbors of the head to the toVisit
-dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
-    % Verify not visited
+dfs([H|T], Visited, RightIn, LeftIn, BottomIn, FinalVisited) :-
     not(member(H, Visited)),
     board(Board),
     member(node(H, _, _, _, IsLeft, IsRight, IsBottom, _), Board),
     get_adjacents_same_color(H, AdjacentsSameColor),
     append(AdjacentsSameColor, T, ToVisit),
-    dfs(ToVisit,[H|Visited], Right, Left, Bottom, FinalVisited),
-    (append([H], Visited, FinalVisited); true),
-    (IsRight = 1 -> Right = 1 ; Right = 0; true),
-    (IsBottom = 1 -> Bottom = 1 ; Bottom = 0; true),
-    (IsLeft = 1 -> Left = 1 ; Left = 0; true).
+    dfs(ToVisit, [H|Visited], R1, L1, B1, FinalVisited),
+    verify_position(IsRight, R1, RightIn),
+    verify_position(IsLeft, L1, LeftIn),
+    verify_position(IsBottom, B1, BottomIn).
+    %((IsRight = 1; RightTemp = 1) -> RightIn = 1, !; RightIn = 0, !),
+    %((IsBottom = 1; BottomTemp = 1) -> BottomIn = 1, !; BottomIn = 0, !),
+    %((IsLeft = 1; LeftTemp = 1) -> LeftIn = 1, !; LeftIn = 0, !).
+
+% verify_position(IsPosition, DfsPosition Right) 
+verify_position(1, 0, 1).
+verify_position(0, 1, 1).
+verify_position(1, 1, 1).
+verify_position(0, 0, 0).
+
+
+
 
 
 get_adjacents_same_color(Position, AdjacentsSameColor) :-
