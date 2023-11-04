@@ -87,6 +87,8 @@ check_player_color(FromPosition) :-
     .
 
 
+
+
 %Predicate to check if a move is valid
 %For a move to be valid the stacks must have the same size, must be adjacent and the top color of the stack must be off a different color
 valid_move(FromPosition, ToPosition) :-
@@ -117,26 +119,6 @@ place_piece(Position) :-
     );
     write("Invalid piece placement! To place a piece the space must be empty!"), nl
     .
-
-
-% Utility predicate to the color
-%modify_node_color(Position, NewColor) :-
-%    board(Board),
-%    member(node(Position, _, StackSize, _, _, _, _, _), Board),
-%    NewStackSize is StackSize + 1,
-%    findall(
-%            Position,
-%            (
-%                \+ member(node(Position, _, _, _, _, _, _,_),Board),
-%            ),
-%            UpdatedNodes
-%        ),
-%    NewBoard = UpdatedNodes.
-%    retract(board(_)),  % Remove the current board from the database
-%    assertz(board(NewBoard)) % Assert the updated board back into the database
-%    .
-
-
 
 
 modify_node_color(Position, NewColor) :-
@@ -173,3 +155,72 @@ increase_stack_size(Position) :-
     retract(board(_)),  % Remove the current board from the database
     assertz(board(NewBoard)) % Assert the updated board back into the database
     .
+
+get_maneuver(ListOfMoves, ListOfPlaces, RandomMove) :-
+    % Get values needed
+    board(Board),
+    current_player(Current),
+    get_valid_places(ListOfPlaces),
+    get_valid_moves(ListOfMoves, Current),
+
+    % Calculate total length
+    length(ListOfPlaces, LengthPlaces),
+    length(ListOfMoves, LengthMoves),
+    LengthMoves > 0,
+    LengthPlaces > 0,
+    Length is LengthMoves + LengthPlaces,
+
+
+    random(0, Length, RandomIndex),
+    (RandomIndex >= LengthPlaces ->
+        nth0(RandomIndex - LengthPlaces, ListOfMoves, [FirstElement, SecondElemen]),
+        move_piece(FirstElement, SecondElement)
+        ;
+        nth0(RandomIndex, ListOfPlaces, Element),
+        place_piece(Element)
+    ).
+
+
+get_valid_places(ReturnList) :-
+    board(Board),
+    findall(
+        Position,
+        (member(Element, Board), Element = node(Position, blank, 0,_,_,_,_,_)),
+        ReturnList
+    ).
+
+get_valid_moves(ReturnList, Player) :- 
+    (Player = yellow -> OtherColor = blue; OtherColor = yellow),
+    board(Board),
+    % Get all the pieces of the player
+    findall(
+        Position,
+        (member(Element, Board), Element = node(Position, Player, _,_,_,_,_,_)),
+        PiecesOfPlayer
+    ),
+    Auxiliary_List = [],
+    % Initialize ReturnList as an empty list
+    get_valid_moves_recursive(PiecesOfPlayer, OtherColor, [], ReturnList).
+
+% Base case: when there are no more pieces to process
+get_valid_moves_recursive([], _, ReturnList, ReturnList).
+
+% Recursive case
+get_valid_moves_recursive([P1|Rest], OtherColor, ReturnList, UpdatedReturnList) :-
+    % Get all adjacents of a different color
+    get_adjacents_of_color(P1, OtherColor, Adjacents),
+    % Process the adjacents
+    process_adjacents(P1, Adjacents, ReturnList, NewReturnList),
+    % Continue recursion with the rest of the pieces
+    get_valid_moves_recursive(Rest, OtherColor, NewReturnList, UpdatedReturnList).
+
+% Process the adjacents
+process_adjacents(_, [], ReturnList, ReturnList).
+process_adjacents(P1, [P2|Rest], ReturnList, UpdatedReturnList) :-
+    (valid_move(P1, P2) -> 
+        append(ReturnList, [[P1, P2]], NewReturnList)
+    ; true % If not a valid move, continue
+    ),
+    process_adjacents(P1, Rest, NewReturnList, UpdatedReturnList).
+
+

@@ -51,38 +51,36 @@ check_winning :-
 
 % If one of the conditions fail then its false
 check_winning_helper(Piece) :- 
-    dfs_start(Piece, Right, Left, Bottom, FinalVisited), !,
+    dfs_start(Piece, Right, Left, Bottom), !,
     Right = 1, !,
     Left = 1, !,
     Bottom = 1, !.
     
 
-dfs_start(Start, Right, Left, Bottom, FinalVisited) :-
-    dfs([Start], [], Right, Left, Bottom, FinalVisited).
+dfs_start(Start, Right, Left, Bottom) :-
+    dfs([Start], [], Right, Left, Bottom).
 
 %% dfs(ToVisit, Visited)
 %% Done, all visited
-dfs([],_,0,0,0,_).
+dfs([],_,0,0,0).
 
 %% Skip elements that are already visited
-dfs([H|T], Visited, Right, Left, Bottom, FinalVisited) :-
+dfs([H|T], Visited, Right, Left, Bottom) :-
     member(H,Visited),
-    dfs(T, Visited, Right, Left, Bottom, FinalVisited).
+    dfs(T, Visited, Right, Left, Bottom).
 
 %% Add all neigbors of the head to the toVisit
-dfs([H|T], Visited, RightIn, LeftIn, BottomIn, FinalVisited) :-
+dfs([H|T], Visited, RightIn, LeftIn, BottomIn) :-
     not(member(H, Visited)),
     board(Board),
+    current_player(Player),
     member(node(H, _, _, _, IsLeft, IsRight, IsBottom, _), Board),
-    get_adjacents_same_color(H, AdjacentsSameColor),
+    get_adjacents_of_color(H, Player, AdjacentsSameColor),
     append(AdjacentsSameColor, T, ToVisit),
-    dfs(ToVisit, [H|Visited], R1, L1, B1, FinalVisited),
+    dfs(ToVisit, [H|Visited], R1, L1, B1),
     verify_position(IsRight, R1, RightIn),
     verify_position(IsLeft, L1, LeftIn),
     verify_position(IsBottom, B1, BottomIn).
-    %((IsRight = 1; RightTemp = 1) -> RightIn = 1, !; RightIn = 0, !),
-    %((IsBottom = 1; BottomTemp = 1) -> BottomIn = 1, !; BottomIn = 0, !),
-    %((IsLeft = 1; LeftTemp = 1) -> LeftIn = 1, !; LeftIn = 0, !).
 
 % verify_position(IsPosition, DfsPosition Right) 
 verify_position(1, 0, 1).
@@ -91,20 +89,16 @@ verify_position(1, 1, 1).
 verify_position(0, 0, 0).
 
 
-
-
-
-get_adjacents_same_color(Position, AdjacentsSameColor) :-
+get_adjacents_of_color(Position, Color, AdjacentsOfColor) :-
     board(Board),
-    current_player(Player),
     % Get the adjacents to that piece
     member(node(Position, _, _, _, _, _, _, Adjacents), Board),
     % Filter the adjacents to only get those of the same color
-    get_adjacents_same_color_helper(Adjacents, Player, AdjacentsSameColor)
+    get_adjacents_of_color_helper(Adjacents, Color, AdjacentsOfColor)
     .
 
 
-get_adjacents_same_color_helper(Adjacents, WantedColor,AdjacentsSameColor):-
+get_adjacents_of_color_helper(Adjacents, WantedColor,AdjacentsOfColor):-
     board(Board),
     findall(
         Position,
@@ -114,7 +108,7 @@ get_adjacents_same_color_helper(Adjacents, WantedColor,AdjacentsSameColor):-
             Color = WantedColor
 
         ),
-        AdjacentsSameColor
+        AdjacentsOfColor
     ).
 
 get_pieces_same_color_on_sides(WantedColor, SameColorList) :-
@@ -123,12 +117,14 @@ get_pieces_same_color_on_sides(WantedColor, SameColorList) :-
         Position,
         (
             (
-                (member(node(Position, Color, _, _, _, _, 1, _), Board));
-                (member(node(Position, Color, _, _, _, 1, _, _), Board));
+                (member(node(Position, Color, _, _, 1, 0, 1, _), Board));
+                (member(node(Position, Color, _, _, 0, 1, 1, _), Board));
+                (member(node(Position, Color, _, _, 1, 1, 0, _), Board));
+                (member(node(Position, Color, _, _, 0, 1, 0, _), Board));
+                (member(node(Position, Color, _, _, 0, 0, 1, _), Board));
                 (member(node(Position, Color, _, _, 1, _, _, _), Board))
             ),
             Color = WantedColor
         ),
-        Auxiliary
-    ),
-    list_to_set(Auxiliary, SameColorList).
+        SameColorList
+    ).
