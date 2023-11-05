@@ -78,7 +78,7 @@ We represent the pieces on the board using a combination of letters and numbers:
 - Letters indicate the color of the piece, where 'Y' stands for yellow and 'B' for blue.
 - Numbers represent the size of the stack. For example, 'Y2' signifies a stack with two pieces, with the bottom one being blue and the top one yellow.
 
-Board positions:                                      Possible game: 
+#### Board positions and Possible game: 
 
                      +----+                                        +----+                   
                      | 01 |                                        | Y1 |                   
@@ -120,16 +120,32 @@ For a game to end, a player must, at the start of their turn, have a trail of pi
 
 ### Game State Evaluation
 
-Describe how to evaluate the game state. The predicate should be called `value(+GameState, +Player, -Value)`.
+To evaluate the current board and the values of its nodes, `board(Board)` can be used. To get the current game state, `game_state(State)` can be used. To get the current player, `current_player(Player)` can be used.
+
+### Input Validation
+
+In our game, we implement input validation to ensure that the positions provided by the user are within the valid range of 1 to 36. Additionally, we verify if the user has correctly specified the type of movement they wish to perform. The valid movement types include:
+
+- `move`: Used to move a piece.
+- `place`: Used to place a piece.
+- `stop`: Used to return to the main menu.
+
+These validation checks help maintain the integrity of the game and prevent unintended actions. For example, attempting to perform an action with an invalid position or specifying an unrecognized movement type will prompt the user to provide valid input.
 
 ### Computer Plays
 
-Describe how the computer chooses a move, depending on the level of difficulty. The predicate should be called `choose_move(+GameState, +Player, +Level, -Move)`. Level 1 should return a valid random move. Level 2 should return the best play at the time (using a greedy algorithm), considering the evaluation of the game state, as described above.
+During the development of our project, we encountered challenges in implementing the second level of difficulty for the computer opponent. At present, the computer makes random moves using the `get_maneuver(ListOfMoves, ListOfPlaces)` function. In this function, `ListOfMoves` represents the available moves, and `ListOfPlaces` signifies the available places on the board.
+
+The computer's strategy involves randomly selecting an element from both of these lists and executing the chosen maneuver.
 
 ## Conclusions
 
-Conclusions about the work carried out, including limitations of the program (known issues), as well as possible improvements (roadmap) (up to 250 words).
+In the development of our Agere game, we successfully implemented key features such as game state representation, move validation, and game state visualization. Our implementation allows for engaging gameplay between two players or with computer opponents.
+
+However, we acknowledge certain limitations in our current version. The second level of difficulty for the computer opponent presented challenges in achieving a more strategic decision-making process. While the current approach provides a basic level of gameplay, further refinement is needed to create a more formidable adversary.
 
 ## Bibliography
 
-List of books, papers, web pages, and other resources used during the development of the assignment.
+- [Agere Game Rules and Introduction](https://adere.drew-edwards.com/): This website provides comprehensive game rules and serves as an initial introduction to Agere, offering valuable insights for players looking to understand the game mechanics and strategies.
+
+- [SWI-Prolog Documentation](https://www.swi-prolog.org/): We extensively utilized the SWI-Prolog documentation for reference, particularly for verifying the names and parameters of the predicates within the imported modules. This resource proved invaluable in ensuring the accuracy and functionality of our Prolog codebase.

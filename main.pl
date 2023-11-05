@@ -4,7 +4,6 @@
 
 play :-
     initialize_game,
-    place_piece(1), place_piece(3), place_piece(6), place_piece(10), place_piece(15), place_piece(21), place_piece(28),
     game_loop.
 
 game_loop :-
