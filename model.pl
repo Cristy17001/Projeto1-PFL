@@ -3,10 +3,10 @@
 :- dynamic node/8.
 :- use_module(library(lists)).
 
-%Data structure used:
-%node(Position, Color, StackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents).
+% Data structure used:
+% node(Position, Color, StackSize, Visited, IsLeft, IsRight, IsBottom, Adjacents).
 
-%Initialize the game state
+% Initialize the game state to be menu, creates/resets the board, creates the won and current_player is set to yellow
 initialize_game :-
     retractall(board(_)),
     retractall(current_player(_)),
@@ -57,19 +57,19 @@ initialize_game :-
     assertz(current_player(yellow)).
 
 
-%Predicate to switch player
+% Predicate to switch player
 switch_player :-
     retract(current_player(Current)),
     (Current = yellow -> Next = blue ; Next = yellow),
     assertz(current_player(Next)).
 
-%Predicate to check adjacency
+% Predicate to check adjacency
 check_adjacency(FromPosition, ToPosition) :-
     board(Board),
     member(Element, Board), Element = node(FromPosition,_,_,_,_,_,_,Adjacents),
     member(Adjacent, Adjacents), Adjacent = ToPosition.
 
-%Predicate to check stackSize and color
+% Predicate to check stackSize and color
 check_stack(FromPosition, ToPosition) :-
     board(Board),
     member(node(FromPosition, FromColor, FromStackSize, _, _, _, _, _), Board),
@@ -77,11 +77,12 @@ check_stack(FromPosition, ToPosition) :-
     FromStackSize = ToStackSize, 
     FromColor \= ToColor.
 
-%Predicate to check if a place is valid
+% Predicate to check if a piece placement is valid
 valid_place(Position) :-
     board(Board),
     member(Element, Board), Element = node(Position, blank, 0,_,_,_,_,_).
 
+% Predicate to check that position has the same color as the current player
 check_player_color(FromPosition) :-
     board(Board),
     current_player(Current),
@@ -97,7 +98,7 @@ valid_move(FromPosition, ToPosition) :-
     check_stack(FromPosition, ToPosition)
     .
 
-% Predicate to make a move
+% Predicate to make a move from the FromPosition to ToPosition
 move_piece(FromPosition, ToPosition) :-
     (
         valid_move(FromPosition, ToPosition),
@@ -122,7 +123,7 @@ place_piece(Position) :-
     write('Invalid piece placement! To place a piece the space must be empty!'), nl
     .
 
-
+% Predicate used to modify the color of a node
 modify_node_color(Position, NewColor) :-
     board(Board),
     member(node(Position, _, StackSize, _, _, _, _, _), Board),
@@ -158,6 +159,7 @@ increase_stack_size(Position) :-
     assertz(board(NewBoard)) % Assert the updated board back into the database
     .
 
+% Predicate to perform the computer movement
 get_maneuver(ListOfMoves, ListOfPlaces) :-
     % Get values needed
     current_player(Current),
@@ -170,8 +172,8 @@ get_maneuver(ListOfMoves, ListOfPlaces) :-
 
 
     % Calculate total length
-    length(ListOfPlaces, LengthPlaces), %5
-    length(ListOfMoves, LengthMoves),   %4
+    length(ListOfPlaces, LengthPlaces),
+    length(ListOfMoves, LengthMoves), 
     Length is integer((LengthMoves + LengthPlaces)-1), 
 
 
@@ -192,13 +194,15 @@ get_maneuver(ListOfMoves, ListOfPlaces) :-
 
 
 
-display_list([]).  % Base case: the list is empty, so there's nothing to display.
 
+% Auxiliary Predicate to display a list
+display_list([]).  % Base case: the list is empty, so there's nothing to display.
 display_list([Head | Tail]) :-  % Recursive case: process the head of the list and then the tail.
     write(Head), write(' '),             % Print the current element.
     display_list(Tail).       % Recursively call display_list for the rest of the list (the tail).
 
 
+% Predicate that returns all the valid places in the ReturnList
 get_valid_places(ReturnList) :-
     board(Board),
     findall(
@@ -207,6 +211,7 @@ get_valid_places(ReturnList) :-
         ReturnList
     ).
 
+% Predicate that return all the valid movements in the ReturnList with structure [FromPosition, ToPosition]
 get_valid_moves(ReturnList, Player) :- 
     (Player = yellow -> OtherColor = blue; OtherColor = yellow),
     board(Board),
