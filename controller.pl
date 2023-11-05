@@ -257,3 +257,9 @@ writeln(Content) :-
 
 not(Content) :-
     \+Content.
+
+between(Low, High, Value) :-
+    Low < High,
+    Low =< Value,
+    High >= Value
+    .
