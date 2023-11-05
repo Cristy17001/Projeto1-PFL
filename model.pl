@@ -105,7 +105,8 @@ move_piece(FromPosition, ToPosition) :-
         increase_stack_size(ToPosition),
         !
     );
-    write("Invalid piece movement/capture! Stacks must be adjacent, have different colors and same size!"), nl, fail
+    format('MOVE: ~w TO ~w',[FromPosition, ToPosition]),nl,
+    write('Invalid piece movement/capture! Stacks must be adjacent, have different colors and same size!'), nl, fail
     .
 
 
@@ -117,7 +118,8 @@ place_piece(Position) :-
         modify_node_color(Position, Player),
     !
     );
-    write("Invalid piece placement! To place a piece the space must be empty!"), nl
+    format('POSTION: ~w',[Position]),nl,
+    write('Invalid piece placement! To place a piece the space must be empty!'), nl
     .
 
 
@@ -159,16 +161,21 @@ increase_stack_size(Position) :-
 get_maneuver(ListOfMoves, ListOfPlaces) :-
     % Get values needed
     current_player(Current),
-    get_valid_places(ListOfPlaces),
-    get_valid_moves(ListOfMoves, Current),
+    get_valid_places(ListOfPlaces), !,
+    get_valid_moves(ListOfMoves, Current), !,
+    write('Possible Places: '),
+    display_list(ListOfPlaces), nl,
+    write('Possible Moves [FromPosition, ToPosition]: '),
+    display_list(ListOfMoves), nl,
+
 
     % Calculate total length
-    length(ListOfPlaces, LengthPlaces),
-    length(ListOfMoves, LengthMoves),
-    Length is integer((LengthMoves + LengthPlaces)),
+    length(ListOfPlaces, LengthPlaces), %5
+    length(ListOfMoves, LengthMoves),   %4
+    Length is integer((LengthMoves + LengthPlaces)-1), 
 
 
-    random(0, Length, RandomIndex),
+    random(0, Length, RandomIndex), %4
     (RandomIndex >= LengthPlaces ->
         Index is RandomIndex-LengthPlaces,
         nth0(Index, ListOfMoves, Element),
@@ -178,9 +185,18 @@ get_maneuver(ListOfMoves, ListOfPlaces) :-
         write('Moved piece from '), write(P1), write(' To '), write(P2), nl
         ;
         nth0(RandomIndex, ListOfPlaces, Element),
+        %format('INDEX OF MOVE -> ~w ::: LENGHT OF PLACES -> ~w',[RandomIndex,LengthPlaces]),nl,
         place_piece(Element),
         write('Placed piece at '), write(Element), nl
     ).
+
+
+
+display_list([]).  % Base case: the list is empty, so there's nothing to display.
+
+display_list([Head | Tail]) :-  % Recursive case: process the head of the list and then the tail.
+    write(Head), write(' '),             % Print the current element.
+    display_list(Tail).       % Recursively call display_list for the rest of the list (the tail).
 
 
 get_valid_places(ReturnList) :-

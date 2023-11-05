@@ -8,8 +8,8 @@
   - up202108813 - Cristiano Filipe Moreira Rocha
   - up202108836 - José Pedro Trocado Ferreira
 - **Contribution:**
-  - Cristiano Rocha: 50%
-  - José Ferreira: 50%
+  - Cristiano Rocha: 60%
+  - José Ferreira: 40%
 
 ## Installation and Execution
 
@@ -34,6 +34,7 @@ For managing the game state, we implemented a dynamic `game_state/1` predicate. 
 
 - `menu`
 - `rules`
+- `exit`
 - `pVp` (player Vs player)
 - `pVc` (player Vs computer)
 - `cVc` (computer Vs computer)

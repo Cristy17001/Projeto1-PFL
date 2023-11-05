@@ -18,6 +18,7 @@ process_game_state(menu) :-
         (Input == 2 -> change_game_state(pVc));
         (Input == 3 -> change_game_state(cVc));
         (Input == 4 -> change_game_state(rules));
+        (Input == 5 -> change_game_state(exit));
         write('INVALID CHOICE!'), nl
     ).
 
@@ -31,17 +32,17 @@ process_game_state(rules) :-
 
 % Process when the game is at the Player vs Player State
 process_game_state(pVp) :-
-    writeln('++++++++++++++++++++++++'),
+    writeln('+++++++++++++++++++'),
     writeln('  _____   _____ '),
     writeln(' | _ \\ \\ / / _ \\'),
     writeln(' |  _/\\ V /|  _/'),
     writeln(' |_|   \\_/ |_|  '),
-    writeln('++++++++++++++++++++++++'),
+    writeln('+++++++++++++++++++'),
 
     repeat,
         (check_winning -> 
             current_player(Player),
-            format('~w Player Won this math.', [Player]),
+            format('~w Player Won this match.', [Player]),
             initialize_game, !, fail
         ; 
             true
@@ -49,40 +50,65 @@ process_game_state(pVp) :-
         read_player_input(Type, FromPosition, ToPosition),
         (
             (Type = move -> move_piece(FromPosition, ToPosition), switch_player, fail);
-            (Type = place -> place_piece(ToPosition), switch_player, fail)
+            (Type = place -> place_piece(ToPosition), switch_player, fail);
+            (Type = stop -> initialize_game, !, fail)
         ).
 
 
 % Process when the game is at the Player vs Computer State
 process_game_state(pVc) :-
+    writeln('+++++++++++++++++++'),
     writeln('  _____   _____ '),
     writeln(' | _ \\ \\ / / __|'),
     writeln(' |  _/\\ V / (__ '),
-    writeln(' |_|   \\_/ \\___|')
-    .
+    writeln(' |_|   \\_/ \\___|'),
+    writeln('+++++++++++++++++++'),
 
 
-
-
-
-% Process when the game is at the Computer vs Computer State
-process_game_state(cVc) :-
-    writeln('  _____   _____ '),
-    writeln(' / __\\ \\ / / __|'),
-    writeln('| (__ \\ V / (__ '),
-    writeln(' \\___| \\_/ \\___|'),
-    
     repeat,
+        current_player(Player),
         (check_winning -> 
-            current_player(Player),
-            format('~w Player Won this math.', [Player]),
+            format('~w Player Won this match.', [Player]),
             initialize_game, !, fail
         ; 
             true
         ),
-        computer_play, 
-        switch_player,
-        fail
+        (Player = yellow ->
+
+            read_player_input(Type, FromPosition, ToPosition),
+            (
+                (Type = move -> move_piece(FromPosition, ToPosition), switch_player, fail);
+                (Type = place -> place_piece(ToPosition), switch_player, fail);
+                (Type = stop -> initialize_game, !, fail)
+            );
+
+            computer_play(Key),
+            (Key = stop -> initialize_game, !, fail; true),
+            switch_player, fail
+        ).
+
+
+% Process when the game is at the Computer vs Computer State
+process_game_state(cVc) :-
+    writeln('+++++++++++++++++++'),
+    writeln('  _____   _____ '),
+    writeln(' / __\\ \\ / / __|'),
+    writeln('| (__ \\ V / (__ '),
+    writeln(' \\___| \\_/ \\___|'),
+    writeln('+++++++++++++++++++'),
+
+
+    repeat,
+        (check_winning -> 
+            current_player(Player),
+            format('~w Player Won this match.', [Player]),
+            initialize_game, !, fail
+        ; 
+            true
+        ),
+        computer_play(Key),
+        (Key = stop -> initialize_game, !, fail; true),
+        switch_player, fail
     .
 
 
@@ -93,23 +119,36 @@ change_game_state(State) :-
     .
 
 
-computer_play :-
+computer_play(Key) :-
     current_player(Player),
     format('It is ~w\'s turn.', [Player]), nl,
     get_maneuver(_, _),
     display_board,
-    write('Waiting for any key to continue: '),
-    read(Key).
+    write('Waiting for any key to continue or stop to stop: '),
+    read(Key)
+    .
 
 
 read_player_input(Type, FromPosition, ToPosition) :-
     current_player(Player),
     display_board,
-    format('It is ~w\'s turn. Enter move or place (e.g. move. OR place.): ', [Player]),
+    format('It is ~w\'s turn. Enter move or place (e.g. move. OR place OR stop.): ', [Player]),
     read(Type),
     (
-        (Type = move -> write('From position: '), read(FromPosition), write('To position: '), read(ToPosition));
-        (Type = place -> write('In position: '), read(ToPosition));
+        (Type = move -> 
+            write('From position: '),
+            read(FromPosition),
+            (between(1, 36, FromPosition); writeln('Invalid Position!'), fail),
+            write('To position: '),
+            read(ToPosition),
+            (between(1, 36, ToPosition); writeln('Invalid Position!'), fail)        
+        );
+        (Type = place -> 
+            write('In position: '), 
+            read(ToPosition),
+            (between(1, 36, ToPosition); writeln('Invalid Position!'), fail)
+        );
+        (Type = stop -> true);
         write('Invalid type of movement!'), nl
     ).
 

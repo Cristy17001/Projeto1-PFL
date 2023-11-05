@@ -128,7 +128,9 @@ draw_menu :-
     write('1. Play PERSON VS PERSON'), nl,
     write('2. Play PERSON VS COMPUTER'), nl,
     write('3. COMPUTER VS COMPUTER'), nl,
-    write('4. SHOW GAME RULES'), nl, nl,
+    write('4. SHOW GAME RULES'), nl,
+    write('5. EXIT'), nl,
+    nl,
     write('Select one option: ')
     .
 
