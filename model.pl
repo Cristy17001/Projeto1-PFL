@@ -118,7 +118,7 @@ place_piece(Position) :-
         modify_node_color(Position, Player),
     !
     );
-    format('POSTION: ~w',[Position]),nl,
+    format('POSITION: ~w',[Position]),nl,
     write('Invalid piece placement! To place a piece the space must be empty!'), nl
     .
 
